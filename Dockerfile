@@ -1,6 +1,6 @@
 FROM ubuntu:20.04
 
-ENV PATH=$PATH:/opt/ghc/bin:/root/.cabal/bin/
+ENV PATH=$PATH:/opt/ghc/bin:/root/.cabal/bin/:/root/kraken
 
 WORKDIR /home/root/
 
@@ -63,5 +63,14 @@ RUN apt-get install -y libsnappy-dev && \
     cabal install .
 
 # get the additional software
-RUN apt-get install -y samtools bedtools
-    
+RUN apt-get install -y samtools bedtools python3-pip && \
+    python3 -m pip install pysam
+
+# install Kraken
+RUN git clone https://github.com/DerrickWood/kraken && \
+    cd kraken && \
+    ./install_kraken.sh /root/kraken
+
+
+
+
