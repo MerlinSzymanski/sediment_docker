@@ -2,13 +2,15 @@ FROM ubuntu:20.04
 
 ENV PATH=$PATH:/opt/ghc/bin:/root/.cabal/bin/
 
+WORKDIR /home/root/
+
 #get the correct c-compile-library to compile bwa
 RUN echo "deb http://dk.archive.ubuntu.com/ubuntu xenial main" >> /etc/apt/sources.list && \
     echo "deb http://dk.archive.ubuntu.com/ubuntu xenial universe" >> /etc/apt/sources.list && \
     apt update && apt install -y g++-4.8 gcc-4.8 && \
     DEBIAN_FRONTEND=noninteractive apt install -y tzdata build-essential && \
     update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.8 1 && \
-    update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 1 && \
+    update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 1
 
 #install bwa
 RUN apt-get install -y libzmq3-dev pkg-config zlib1g-dev git && \
@@ -26,7 +28,9 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -y software-properties-common
     apt-get install -y ghc-8.0.2 libjudy-dev wget
 
 #install cabal and cabal-install (haskell library-installer)
-RUN update-alternatives --set g++ /usr/bin/g++-9 && \
+RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 2 && \
+    update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-9 2 && \
+    update-alternatives --set g++ /usr/bin/g++-9 && \
     update-alternatives --set gcc /usr/bin/gcc-9 && \
     wget https://downloads.haskell.org/~cabal/Cabal-1.24.2.0/Cabal-1.24.2.0.tar.gz && \
     tar xzf Cabal-1.24.2.0.tar.gz && \
@@ -45,18 +49,19 @@ RUN wget https://hackage.haskell.org/package/cabal-install-1.24.0.2/cabal-instal
     cabal update
 
 # install Biohazard
-RUN git clone https://github.com/mpieva/biohazard && \
+RUN cabal install base-prelude-1.2.0.1 && \
+    git clone https://github.com/mpieva/biohazard && \
     cd biohazard && \
-    git checkout 10e45fb && \
+    git checkout 0.6.15 && \
     cabal install .
 
-# and Biohazard-tools //THIS FAILS
+# and Biohazard-tools
 RUN apt-get install -y libsnappy-dev && \
     git clone https://github.com/mpieva/biohazard-tools && \
     cd biohazard-tools && \
-    git checkout 0.1 && \
+    git checkout 2231874 && \
     cabal install .
-    
-    
-    
+
+# get the additional software
+RUN apt-get install -y samtools bedtools
     
