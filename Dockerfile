@@ -1,6 +1,8 @@
 FROM ubuntu:20.04
 
-ENV PATH=$PATH:/opt/ghc/bin:/root/.cabal/bin/:/root/kraken
+ENV PATH=$PATH:/opt/ghc/bin:/root/.cabal/bin/:/root/kraken::/root/.cargo/bin
+
+COPY pkgs/ /home/root/
 
 WORKDIR /home/root/
 
@@ -71,6 +73,17 @@ RUN git clone https://github.com/DerrickWood/kraken && \
     cd kraken && \
     ./install_kraken.sh /root/kraken
 
+# install splitbam
+RUN tar xzf splitbam-0.1.6a4.tar.gz && \
+    python3 -m pip install splitbam-0.1.6a4/ && \
+    rm splitbam-0.1.6a4.tar.gz
 
-
-
+#install the rust-packages
+RUN apt-get install -y cargo && \
+    apt-get install -y clang && \
+    tar xzf bamfilter-0.2.9.crate && \
+    cargo install --path bamfilter-0.2.9/ && \
+    rm bamfilter-0.2.9.crate && \
+    tar xzf bam-lengthfilter-0.1.1.crate && \
+    cargo install --path bam-lengthfilter-0.1.1 && \
+    rm bam-lengthfilter-0.1.1.crate
