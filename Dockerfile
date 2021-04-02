@@ -1,6 +1,6 @@
 FROM ubuntu:20.04
 
-ENV PATH=$PATH:/opt/ghc/bin:/root/.cabal/bin/:/root/kraken::/root/.cargo/bin
+ENV PATH=$PATH:/opt/ghc/bin:/root/.cabal/bin/:/root/kraken:/root/.cargo/bin
 
 COPY pkgs/ /home/root/
 
@@ -51,18 +51,18 @@ RUN wget https://hackage.haskell.org/package/cabal-install-1.24.0.2/cabal-instal
     cabal update
 
 # install Biohazard
-RUN cabal install base-prelude-1.2.0.1 && \
+RUN cabal install --global base-prelude-1.2.0.1 && \
     git clone https://github.com/mpieva/biohazard && \
     cd biohazard && \
     git checkout 0.6.15 && \
-    cabal install .
+    cabal install --global .
 
 # and Biohazard-tools
 RUN apt-get install -y libsnappy-dev && \
     git clone https://github.com/mpieva/biohazard-tools && \
     cd biohazard-tools && \
     git checkout 2231874 && \
-    cabal install .
+    cabal install --global .
 
 # get the additional software
 RUN apt-get install -y samtools bedtools python3-pip && \
@@ -71,7 +71,7 @@ RUN apt-get install -y samtools bedtools python3-pip && \
 # install Kraken
 RUN git clone https://github.com/DerrickWood/kraken && \
     cd kraken && \
-    ./install_kraken.sh /root/kraken
+    ./install_kraken.sh /usr/local/bin/
 
 # install splitbam
 RUN tar xzf splitbam-0.1.6a4.tar.gz && \
@@ -82,8 +82,8 @@ RUN tar xzf splitbam-0.1.6a4.tar.gz && \
 RUN apt-get install -y cargo && \
     apt-get install -y clang && \
     tar xzf bamfilter-0.2.9.crate && \
-    cargo install --path bamfilter-0.2.9/ && \
+    cargo install --path bamfilter-0.2.9/ --root /usr/local/ && \
     rm bamfilter-0.2.9.crate && \
     tar xzf bam-lengthfilter-0.1.1.crate && \
-    cargo install --path bam-lengthfilter-0.1.1 && \
+    cargo install --path bam-lengthfilter-0.1.1 --root /usr/local/ && \
     rm bam-lengthfilter-0.1.1.crate
