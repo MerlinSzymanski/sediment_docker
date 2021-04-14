@@ -66,7 +66,9 @@ RUN apt-get install -y libsnappy-dev && \
 
 # get the additional software
 RUN apt-get install -y samtools bedtools python3-pip && \
-    python3 -m pip install pysam
+    python3 -m pip install pysam && \
+    python3 -m pip install pandas &&\
+    python3 -m pip install scipy
 
 # install Kraken
 RUN git clone https://github.com/DerrickWood/kraken && \
