@@ -41,28 +41,36 @@ RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 2 && \
     ghc -threaded --make Setup && \
     ./Setup configure && \
     ./Setup build && \
-    ./Setup install
+    ./Setup install && \
+    cd .. && \
+    rm -r Cabal-1.24.2.0
 
 RUN wget https://hackage.haskell.org/package/cabal-install-1.24.0.2/cabal-install-1.24.0.2.tar.gz && \
     tar xzf cabal-install-1.24.0.2.tar.gz && \
     rm cabal-install-1.24.0.2.tar.gz && \
     cd cabal-install-1.24.0.2 && \
     EXTRA_CONFIGURE_OPTS="" ./bootstrap.sh && \
-    cabal update
+    cabal update && \
+    cd .. && \
+    rm -r cabal-install-1.24.0.2
 
 # install Biohazard
 RUN cabal install --global base-prelude-1.2.0.1 && \
     git clone https://github.com/mpieva/biohazard && \
     cd biohazard && \
     git checkout 0.6.15 && \
-    cabal install --global .
+    cabal install --global . && \
+    cd .. && \
+    rm -r biohazard
 
 # and Biohazard-tools
 RUN apt-get install -y libsnappy-dev && \
     git clone https://github.com/mpieva/biohazard-tools && \
     cd biohazard-tools && \
     git checkout 2231874 && \
-    cabal install --global .
+    cabal install --global . && \
+    cd .. && \
+    rm -r biohazard-tools
 
 # get the additional software
 RUN apt-get install -y samtools bedtools python3-pip && \
@@ -73,12 +81,22 @@ RUN apt-get install -y samtools bedtools python3-pip && \
 # install Kraken
 RUN git clone https://github.com/DerrickWood/kraken && \
     cd kraken && \
-    ./install_kraken.sh /usr/local/bin/
+    ./install_kraken.sh /usr/local/bin/ && \
+    cd .. && \
+    rm -r kraken
+
+# install KrakenUniq
+RUN git clone https://github.com/fbreitwieser/krakenuniq && \
+    cd krakenuniq && \
+    ./install_krakenuniq.sh /usr/local/bin/ && \
+    cd .. && \
+    rm -r krakenuniq
 
 # install splitbam
 RUN tar xzf splitbam-0.1.6a4.tar.gz && \
     python3 -m pip install splitbam-0.1.6a4/ && \
-    rm splitbam-0.1.6a4.tar.gz
+    rm splitbam-0.1.6a4.tar.gz && \
+    rm -r splitbam-0.1.6a4
 
 #install the rust-packages
 RUN apt-get install -y cargo && \
@@ -86,6 +104,13 @@ RUN apt-get install -y cargo && \
     tar xzf bamfilter-0.2.9.crate && \
     cargo install --path bamfilter-0.2.9/ --root /usr/local/ && \
     rm bamfilter-0.2.9.crate && \
+    rm -r bamfilter-0.2.9 && \
     tar xzf bam-lengthfilter-0.1.1.crate && \
     cargo install --path bam-lengthfilter-0.1.1 --root /usr/local/ && \
-    rm bam-lengthfilter-0.1.1.crate
+    rm bam-lengthfilter-0.1.1.crate && \
+    rm -r bam-lengthfilter-0.1.1
+    
+#install packages required for the datastructure
+RUN apt-get install -y rsync ncbi-blast+ 
+RUN python3 -m pip install biopython
+
