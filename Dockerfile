@@ -1,6 +1,6 @@
 FROM ubuntu:20.04
 
-ENV PATH=$PATH:/opt/ghc/bin:/root/.cabal/bin/:/root/kraken:/root/.cargo/bin
+ENV PATH=$PATH:/opt/ghc/bin:/root/.cabal/bin/:/root/.cargo/bin:/usr/local/krakenuniq/:/usr/local/kraken/
 
 COPY pkgs/ /home/root/
 
@@ -81,15 +81,16 @@ RUN apt-get install -y samtools bedtools python3-pip && \
 # install Kraken
 RUN git clone https://github.com/DerrickWood/kraken && \
     cd kraken && \
-    ./install_kraken.sh /usr/local/bin/
+    ./install_kraken.sh /usr/local/kraken 
 
 # install KrakenUniq
 RUN git clone https://github.com/fbreitwieser/krakenuniq && \
     cd krakenuniq && \
-    ./install_krakenuniq.sh /usr/local/bin/
+    ./install_krakenuniq.sh /usr/local/krakenuniq 
 
 # install jellyfish 1
-RUN apt-get install jellyfish1
+RUN apt-get install jellyfish1 && \
+ln -s /usr/bin/jellyfish1 /usr/local/bin/jellyfish
 
 
 # install splitbam
