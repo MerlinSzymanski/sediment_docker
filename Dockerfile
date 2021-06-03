@@ -81,16 +81,16 @@ RUN apt-get install -y samtools bedtools python3-pip && \
 # install Kraken
 RUN git clone https://github.com/DerrickWood/kraken && \
     cd kraken && \
-    ./install_kraken.sh /usr/local/bin/ && \
-    cd .. && \
-    rm -r kraken
+    ./install_kraken.sh /usr/local/bin/
 
 # install KrakenUniq
 RUN git clone https://github.com/fbreitwieser/krakenuniq && \
     cd krakenuniq && \
-    ./install_krakenuniq.sh /usr/local/bin/ && \
-    cd .. && \
-    rm -r krakenuniq
+    ./install_krakenuniq.sh /usr/local/bin/
+
+# install jellyfish 1
+RUN apt-get install jellyfish1
+
 
 # install splitbam
 RUN tar xzf splitbam-0.1.6a4.tar.gz && \
