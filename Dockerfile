@@ -88,9 +88,14 @@ RUN git clone https://github.com/fbreitwieser/krakenuniq && \
     cd krakenuniq && \
     ./install_krakenuniq.sh /usr/local/krakenuniq 
 
-# install jellyfish 1
-RUN apt-get install jellyfish1 && \
-ln -s /usr/bin/jellyfish1 /usr/local/bin/jellyfish
+# install jellyfish 1.1.12
+RUN wget https://github.com/gmarcais/Jellyfish/releases/download/v1.1.12/jellyfish-1.1.12.tar.gz && \
+    tar -zxf jellyfish-1.1.12.tar.gz && \
+    rm jellyfish-1.1.12.tar.gz && \
+    cd jellyfish-1.1.12 && \
+    ./configure --prefix=/usr/local/ && \
+    make -j 4 && \
+    make install
 
 
 # install splitbam
